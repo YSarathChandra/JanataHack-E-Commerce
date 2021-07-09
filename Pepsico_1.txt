@@ -1,0 +1,155 @@
+------------------------------------------------------Retailer Dashboard
+---------------------------Manufacturer top sales
+
+Select Manufacturer,sum(sale_price)sales,sum(Total_Volume)volume from Pepsico_Centralized_Data_Dashboard
+where RetailerName='CARREFOUR' and year=2019 and month<=2 
+and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA'
+Group by Manufacturer
+order by sum(sale_price) Desc
+
+-----------------------Share percent
+
+select manufacturer,sales,volume,round((sales/ove_sales)*100,2) [Share%],Round((volume/Ove_volume)*100,2)[Volume%] from (
+select Manufacturer,sum(sale_price)sales,sum(Total_Volume)volume from Pepsico_Centralized_Data_Dashboard
+where RetailerName='CARREFOUR' and year=2019 and month<=2 
+and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA'
+Group by Manufacturer)a
+Cross join
+(select sum(sale_price)Ove_sales,sum(Total_Volume)Ove_volume from Pepsico_Centralized_Data_Dashboard
+ where RetailerName='CARREFOUR' and year=2019 and month<=2 
+ and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA' )b
+order by sales desc
+
+------------------------Growth percentage
+
+select top 3 a.manufacturer,sales,round(((sales-ove_sales)/ove_sales)*100,2) [Share%],round(((volume-Ove_volume)/Ove_volume)*100,2) [Volume%]
+from (select Manufacturer,sum(sale_price)sales,sum(Total_Volume)volume from Pepsico_Centralized_Data_Dashboard
+      where RetailerName='CARREFOUR' and year=2019 and month<=2 
+      and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA'
+      Group by Manufacturer)a
+left join
+(select Manufacturer,sum(sale_price)Ove_sales,sum(Total_Volume)Ove_volume from Pepsico_Centralized_Data_Dashboard
+ where RetailerName='CARREFOUR' and year=2018 and month<=2 
+ and CATEGORY_DEFINITION in('SAVOURY SNACKS') and country='KSA' 
+ Group by Manufacturer)b on a.manufacturer=b.manufacturer 
+ order by sales desc
+ 
+ ----------------------------------------Bundle type growth %
+ 
+select  a.Bundle_Type,sales,round(((sales-ove_sales)/ove_sales)*100,2) [Share%],round(((volume-Ove_volume)/Ove_volume)*100,2) [Volume%]
+from (select Bundle_Type,sum(sale_price)sales,sum(Total_Volume)volume from Pepsico_Centralized_Data_Dashboard
+      where RetailerName='CARREFOUR' and year=2019 and month<=2 
+      and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA'
+      Group by Bundle_Type)a
+left join
+(select Bundle_Type,sum(sale_price)Ove_sales,sum(Total_Volume)Ove_volume from Pepsico_Centralized_Data_Dashboard
+ where RetailerName='CARREFOUR' and year=2018 and month<=2 
+ and CATEGORY_DEFINITION in('SAVOURY SNACKS') and country='KSA' 
+ Group by Bundle_Type)b on a.Bundle_Type=b.Bundle_Type 
+ order by sales desc
+ 
+ ---------bundle type share %
+ ---------------------------------ytd_2018
+ select Bundle_Type,sales,volume,round((sales/ove_sales)*100,0) [Share%],Round((volume/Ove_volume)*100,0)[Volume%] from (
+select Bundle_Type,sum(sale_price)sales,sum(Total_Volume)volume from Pepsico_Centralized_Data_Dashboard
+where RetailerName='CARREFOUR' and year=2019 and month<=2 
+and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA'
+Group by Bundle_Type)a
+Cross join
+(select sum(sale_price)Ove_sales,sum(Total_Volume)Ove_volume from Pepsico_Centralized_Data_Dashboard
+ where RetailerName='CARREFOUR' and year=2019 and month<=2 
+ and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA' )b
+order by sales desc
+
+----------------------------------ytd_2017
+select Bundle_Type,sales,volume,round((sales/ove_sales)*100,0) [Share%],Round((volume/Ove_volume)*100,0)[Volume%] from (
+select Bundle_Type,sum(sale_price)sales,sum(Total_Volume)volume from Pepsico_Centralized_Data_Dashboard
+where RetailerName='CARREFOUR' and year=2018 and month<=2 
+and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA'
+Group by Bundle_Type)a
+Cross join
+(select sum(sale_price)Ove_sales,sum(Total_Volume)Ove_volume from Pepsico_Centralized_Data_Dashboard
+ where RetailerName='CARREFOUR' and year=2018 and month<=2 
+ and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA' )b
+order by sales desc
+
+---------------------------------price/kg
+select Bundle_Type,sales,(vol/1000)kg,round((sales/(vol/1000)),2)p
+from (
+		select Bundle_Type,sum(sale_price)sales,sum(Total_Volume)vol from Pepsico_Centralized_Data_Dashboard
+        where RetailerName='CARREFOUR' and year=2019 and month<=2 and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA' 
+        Group by Bundle_Type)l
+------------------------------------%chg
+select a.Bundle_Type,round((a.cy-b.ly)/b.ly*100,2) chg_per from (
+select Bundle_Type,sum(sale_price)sal,(sum(Total_Volume)/1000)kg,(sum(sale_price)/(sum(Total_Volume)/1000))cy
+from Pepsico_Centralized_Data_Dashboard
+where RetailerName='CARREFOUR' and year=2019 and month<=2 and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA' 
+Group by Bundle_Type )a
+left join 
+(select Bundle_Type,sum(sale_price)sal,(sum(Total_Volume)/1000)kg,(sum(sale_price)/(sum(Total_Volume)/1000))ly
+from Pepsico_Centralized_Data_Dashboard
+where RetailerName='CARREFOUR' and year=2018 and month<=2 and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA' 
+Group by Bundle_Type )b
+on a.Bundle_Type=b.Bundle_Type	
+
+---------------------------------------------------------brand metrics
+
+----------------------------------------brand name growth %
+ 
+select  a.Brand_name,sales,round(((sales-ove_sales)/ove_sales)*100,2) [Share%],round(((volume-Ove_volume)/Ove_volume)*100,2) [Volume%]
+from (select Brand_name,sum(sale_price)sales,sum(Total_Volume)volume from Pepsico_Centralized_Data_Dashboard
+      where RetailerName='CARREFOUR' and year=2019 and month<=2 
+      and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA'
+      Group by Brand_name)a
+left join
+(select Brand_name,sum(sale_price)Ove_sales,sum(Total_Volume)Ove_volume from Pepsico_Centralized_Data_Dashboard
+ where RetailerName='CARREFOUR' and year=2018 and month<=2 
+ and CATEGORY_DEFINITION in('SAVOURY SNACKS') and country='KSA' 
+ Group by Brand_name)b on a.Brand_name=b.Brand_name 
+ order by sales desc
+ 
+ ---------brand name share %
+ ---------------------------------ytd_2019
+ select Brand_name,sales,volume,round((sales/ove_sales)*100,0) [Share%],Round((volume/Ove_volume)*100,0)[Volume%] from (
+select Brand_name,sum(sale_price)sales,sum(Total_Volume)volume from Pepsico_Centralized_Data_Dashboard
+where RetailerName='CARREFOUR' and year=2019 and month<=2 
+and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA'
+Group by Brand_name)a
+Cross join
+(select sum(sale_price)Ove_sales,sum(Total_Volume)Ove_volume from Pepsico_Centralized_Data_Dashboard
+ where RetailerName='CARREFOUR' and year=2019 and month<=2 
+ and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA' )b
+order by sales desc
+
+----------------------------------ytd_2018
+select Brand_name,sales,volume,round((sales/ove_sales)*100,1) [Share%],Round((volume/Ove_volume)*100,0)[Volume%] from (
+select Brand_name,sum(sale_price)sales,sum(Total_Volume)volume from Pepsico_Centralized_Data_Dashboard
+where RetailerName='CARREFOUR' and year=2018 and month<=2 
+and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA'
+Group by Brand_name)a
+Cross join
+(select sum(sale_price)Ove_sales,sum(Total_Volume)Ove_volume from Pepsico_Centralized_Data_Dashboard
+ where RetailerName='CARREFOUR' and year=2018 and month<=2 
+ and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA' )b
+order by sales desc
+
+---------------------------------price/kg
+select Brand_name,sales,(vol/1000)kg,round((sales/(vol/1000)),2)p
+from (
+		select Brand_name,sum(sale_price)sales,sum(Total_Volume)vol from Pepsico_Centralized_Data_Dashboard
+        where RetailerName='CARREFOUR' and year=2019 and month<=2 and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA' 
+        Group by Brand_name)l
+order by sales desc
+------------------------------------%chg
+select a.Brand_name,a.sal,round((a.cy-b.ly)/b.ly*100,2) from (
+select Brand_name,sum(sale_price)sal,(sum(Total_Volume)/1000)kg,(sum(sale_price)/(sum(Total_Volume)/1000))cy
+from Pepsico_Centralized_Data_Dashboard
+where RetailerName='CARREFOUR' and year=2019 and month<=2 and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA' 
+Group by Brand_name )a
+left join 
+(select Brand_name,sum(sale_price)sal,(sum(Total_Volume)/1000)kg,(sum(sale_price)/(sum(Total_Volume)/1000))ly
+from Pepsico_Centralized_Data_Dashboard
+where RetailerName='CARREFOUR' and year=2018 and month<=2 and CATEGORY_DEFINITION in('SAVOURY SNACKS' ) and country='KSA' 
+Group by Brand_name )b
+on a.Brand_name=b.Brand_name
+order by sal desc		
